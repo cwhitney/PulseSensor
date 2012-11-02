@@ -7,6 +7,7 @@
 //
 
 #include "PulseReader.h"
+#include "cinder/Timeline.h"
 
 void PulseReader::setup()
 {
@@ -89,12 +90,29 @@ void PulseReader::update()
         }
     }
     
+    checkForFinger();
+}
+
+void PulseReader::checkForFinger()
+{
+    if( sensorData == 0 && mBuffer[BUFFER_SIZE-1]==0 && mBuffer[BUFFER_SIZE-2]==0 ){
+        bIsFingerOver = true;
+    }
+    
+    else if( sensorData > 950 && mBuffer[BUFFER_SIZE-1]>950 && mBuffer[BUFFER_SIZE-2]>950 ){
+        bIsFingerOver = false;
+    }
+    
+    // shift down buffer
+    memmove( mBuffer, mBuffer+1, sizeof(int) * (BUFFER_SIZE-1) );
+    mBuffer[BUFFER_SIZE-1] = sensorData;
+    
+    
     // CHECK FOR FINGER STATUS
     if( isFingerOver() != bLastFingerStatus ){
         if( isFingerOver() )    sOnFingerOver();
         else                    sOnFingerOut();
     }
     
-    bLastFingerStatus = isFingerOver();
-    
+    bLastFingerStatus = bIsFingerOver;
 }
