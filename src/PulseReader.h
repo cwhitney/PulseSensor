@@ -17,7 +17,7 @@
 
 #define BOOST_INTEL_STDCXX0X
 #define BAUD_RATE 115200
-#define BUFFER_SIZE 3
+#define BUFFER_SIZE 5
 
 using namespace std;
 using namespace ci;

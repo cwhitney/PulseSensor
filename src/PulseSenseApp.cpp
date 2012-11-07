@@ -62,13 +62,21 @@ void PulseSenseApp::setup()
         mOscPort = ci::fromString<int>( js["osc_port"].getValue() );
     }
     
-    console() << "PulseSense :: Osc running on " << mOscHost << ":" << mOscPort << endl;
+    console() << "PulseSense :: Osc sending on " << mOscHost << ":" << mOscPort << endl;
     
     mOscSender.setup( mOscHost, mOscPort );
     
     eventStr = "";
     mHeartAlpha = 0;
     mEventAlpha = 0;
+    
+    // PULSE EVENTS
+    mPulseReader.sOnPulseBeat.connect( bind(&PulseSenseApp::onHeartBeat, this ) );
+    mPulseReader.sOnPulseStart.connect( bind(&PulseSenseApp::onPulseStart, this ) );
+    
+    // FINGER EVENTS
+    mPulseReader.sOnFingerOver.connect( bind(&PulseSenseApp::onFingerOver, this ) );
+    mPulseReader.sOnFingerOut.connect( bind(&PulseSenseApp::onFingerOut, this ) );
 }
 
 void PulseSenseApp::mouseDown( MouseEvent event )
@@ -79,13 +87,7 @@ void PulseSenseApp::update()
 {
     mPulseReader.update();
     
-    // PULSE EVENTS
-    mPulseReader.sOnPulseBeat.connect( bind(&PulseSenseApp::onHeartBeat, this ) );
-    mPulseReader.sOnPulseStart.connect( bind(&PulseSenseApp::onPulseStart, this ) );
     
-    // FINGER EVENTS
-    mPulseReader.sOnFingerOver.connect( bind(&PulseSenseApp::onFingerOver, this ) );
-    mPulseReader.sOnFingerOut.connect( bind(&PulseSenseApp::onFingerOut, this ) );
 }
 
 void PulseSenseApp::draw()

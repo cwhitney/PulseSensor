@@ -89,17 +89,27 @@ void PulseReader::update()
             }catch(...){ continue; }
         }
     }
+    mSerial.flush();
     
     checkForFinger();
 }
 
 void PulseReader::checkForFinger()
 {
-    if( sensorData == 0 && mBuffer[BUFFER_SIZE-1]==0 && mBuffer[BUFFER_SIZE-2]==0 ){
+    bool bBufferMatches=true;
+    for( int i=1; i<BUFFER_SIZE-1; i++){
+        if( mBuffer[i-1] != mBuffer[i] ){
+            bBufferMatches = false;
+            break;
+        }
+    }
+    
+    
+    if( sensorData == 0 && bBufferMatches ){
         bIsFingerOver = true;
     }
     
-    else if( sensorData > 950 && mBuffer[BUFFER_SIZE-1]>950 && mBuffer[BUFFER_SIZE-2]>950 ){
+    else if( sensorData > 950 && bBufferMatches ){
         bIsFingerOver = false;
     }
     
